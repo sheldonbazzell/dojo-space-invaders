@@ -2,19 +2,22 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Shuriken Toss</title>
+	<title>Dojo Invaders</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-	<h1 id="title">Ninja Shurikens</h1>
+	<h1 id="title">Dojo Invaders</h1>
 	<ul>
 		<li>Move ninja left or right</li>
-		<li>If monster reaches bottom of frame or 
+		<li>If invader reaches bottom of frame or 
 		collides with ninja, ninja loses a life
 		</li>
+		<li>Space bar to shoot</li>
+		<li>Be aware of how fast you are shooting!<br> <span>(the Ninja can only hold 3 shurikens at once)</span></li>
 		<li>Lost? Space bar to restart</li>
 	</ul>
 	<div id="high-score"></div>
+	<div id="ammo"></div>
 	<canvas id="myCanvas" width="320" height="480"></canvas>
 	<script src="script.js"></script>
 </body>

@@ -1,16 +1,6 @@
 var canvas = document.getElementById('myCanvas'),
 	ctx    = canvas.getContext('2d');
 
-function drawSquare(height) {
-	var height = height;
-	ctx.beginPath();
-	ctx.rect(canvas.width/2 + 100, canvas.height/2 + 190, 40, height);
-	ctx.fillStyle = 'blue';
-	ctx.fill();
-	ctx.closePath()
-}
-drawSquare(40);
-
 var ninjaWidth  = 29,
 	ninjaHeight = 43,
 	lives	    = 3,
@@ -31,14 +21,14 @@ document.addEventListener('keyup', keyUpHandler)
 
 var highScore = 0;
 var displayHighScore = function() {
+	if(localStorage.getItem('highScore') == null) {
+		localStorage.getItem('highScore') = 0;
+	}
 	document.getElementById('high-score').innerHTML = "<p>High Score: "+localStorage.getItem('highScore')+"</p>"
 }
 var newHighScore = function() {
-	console.log(score.score)
-	console.log(highScore)
 	if(score.score > highScore) {
 		localStorage.setItem('highScore', score.score);
-		console.log(localStorage.getItem('highScore'))
 		displayHighScore();
 	}
 }
@@ -70,13 +60,17 @@ function keyUpHandler(e) {
 var shurikens = [],
 	monsters  = [];
 
-addShuriken();
 addMonster();
 setInterval(function() {
-	addShuriken();
 	addMonster();
 }, 500);
 draw();
+
+document.onkeypress = function(e) {
+	if(e.keyCode == 32) {
+		addShuriken();
+	}
+}
 
 var shurikenWidth  = 18;
 var shurikenHeight = 18;
@@ -88,14 +82,20 @@ function addShuriken() {
 	shurikens.push({x:ninjaX, y:shurikenY, dx: 0, dy:-2})
 }
 
-function drawMoveShurikens() {
-	for(var i = 0; i < shurikens.length; i++) {
-		s = shurikens[i];
-		drawShuriken(s.x, s.y);
-		s.y = s.y + s.dy;
-		if(s.x < 0 || s.x > ctx.width || s.y < 0) {
-			shurikens.splice(i, 1);
+function drawMoveShurikens() { 
+	console.log(shurikens)
+	if(shurikens.length < 3) {
+		for(var i = 0; i < shurikens.length; i++) {
+			s = shurikens[i];
+			drawShuriken(s.x, s.y);
+			s.y = s.y + s.dy;
+			if(s.x < 0 || s.x > ctx.width || s.y < 0) {
+				shurikens.splice(i, 1);
+			}
 		}
+	}
+	else {
+		shurikens.length = 3;
 	}
 }
 
@@ -124,6 +124,7 @@ var explosionHeight = 20,
 
 
 function drawShuriken(posX, posY) {
+
 	shuriken_image     = new Image();
 	shuriken_image.src = 'images/ns1.png'
 	ctx.drawImage(shuriken_image, posX - shurikenWidth/2,
@@ -136,28 +137,35 @@ var monsterWidth  = 44,
 	monsterY      = 0;
 function drawMonster(posX, posY) {
 	monster_image     = new Image();
-	monster_image.src = 'images/monster_transparent.png'
+	monster_image.src = 'images/spaceinvader.png'
 	ctx.drawImage(monster_image, posX - monsterWidth/2,
 	posY, monsterWidth, monsterHeight);
 }
 
 function drawLives() {
 	ctx.font = "16px Arial";
-	ctx.fillStyle = "#0095DD";
+	ctx.fillStyle = "#000000";
 	ctx.fillText("Lives: " + lives, canvas.width-66, 20);
 }
 function drawScore() {
 	ctx.font = "16px Arial";
-	ctx.fillStyle = "#0095DD";
+	ctx.fillStyle = "#000000";
 	ctx.fillText("Score: " + score.score, canvas.width-66, 40);
+}
+function drawAmmo() {
+	document.getElementById('ammo').innerHTML = "Shurikens: " + shurikens.length;
+	// ctx.font = "16px Arial";
+	// ctx.fillStyle = "#000000";
+	// ctx.fillText("Score: " + score.score, canvas.width-66, 40);
 }
 
 function draw() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawMoveShurikens();
+	ctx.clearRect(0, 0, canvas.width, canvas.height);	
 	drawMoveMonsters();
 	drawLives();
+	drawAmmo();
 	drawScore();
+	drawMoveShurikens();
 	monsterNinjaCollision();
 	displayHighScore();
 	monsterShurikenCollision();
@@ -188,7 +196,6 @@ function drawExplosion(posX, posY) {
 function gameOver() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawNinja(ninjaX, ninjaY);
-	drawMoveShurikens();
 	drawMoveMonsters();
 	drawLives();
 	newHighScore();

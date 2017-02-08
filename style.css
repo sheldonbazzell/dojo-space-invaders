@@ -13,6 +13,7 @@ body {
 
 ul {
 	text-align: center;
+	line-height: 1.5;
 }
 
 #high-score {
@@ -25,8 +26,17 @@ ul {
 	vertical-align: top;
 }
 
+#ammo {
+	width: 30%;
+	text-align: right;
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 20px;
+}
+
 canvas {
-	background: rgb(242,233,216);
+	background: rgb(34,139,34);
+	width: 375px;
 	display: block;
 	margin: 0 auto;
 }
