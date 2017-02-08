@@ -29,6 +29,29 @@ var rightPressed = false,
 document.addEventListener('keydown', keyDownHandler)
 document.addEventListener('keyup', keyUpHandler)
 
+var highScore = 0;
+var displayHighScore = function() {
+	document.getElementById('high-score').innerHTML = "<p>High Score: "+localStorage.getItem('highScore')+"</p>"
+}
+var newHighScore = function() {
+	console.log(score.score)
+	console.log(highScore)
+	if(score.score > highScore) {
+		localStorage.setItem('highScore', score.score);
+		console.log(localStorage.getItem('highScore'))
+		displayHighScore();
+	}
+}
+
+function Score() {
+	this.score = 0;
+	this.increaseScore = function() {
+		this.score +=10;
+	}
+}
+
+var score = new Score();
+
 function keyDownHandler(e) {
 	if(e.keyCode == 39) {
 		rightPressed = true;
@@ -121,7 +144,12 @@ function drawMonster(posX, posY) {
 function drawLives() {
 	ctx.font = "16px Arial";
 	ctx.fillStyle = "#0095DD";
-	ctx.fillText("Lives: " + lives, canvas.width-65, 20);
+	ctx.fillText("Lives: " + lives, canvas.width-66, 20);
+}
+function drawScore() {
+	ctx.font = "16px Arial";
+	ctx.fillStyle = "#0095DD";
+	ctx.fillText("Score: " + score.score, canvas.width-66, 40);
 }
 
 function draw() {
@@ -129,7 +157,9 @@ function draw() {
 	drawMoveShurikens();
 	drawMoveMonsters();
 	drawLives();
+	drawScore();
 	monsterNinjaCollision();
+	displayHighScore();
 	monsterShurikenCollision();
 	drawNinja(ninjaX, ninjaY);
 	if(rightPressed && ninjaX < (canvas.width - ninjaWidth/2)) {
@@ -161,6 +191,7 @@ function gameOver() {
 	drawMoveShurikens();
 	drawMoveMonsters();
 	drawLives();
+	newHighScore();
 	ctx.fillStyle = "Black";
 	ctx.font      = "16px Arial";
 	ctx.fillText("GAME OVER", canvas.width/2-50, canvas.height/2-10)
@@ -176,7 +207,6 @@ function monsterNinjaCollision() {
 
 	for(var i = 0; i < monsters.length; i++) {
 		monster = monsters[i];
-		console.log(monster)
 		monsterMinX = monster.x - monsterWidth/2;
 		monsterMaxX = monster.x + monsterWidth/2;
 		monsterMinY = monster.y - monsterHeight/2;
@@ -216,9 +246,9 @@ function monsterShurikenCollision() {
 			(monsterMaxY > shurikenMinY && monsterMinY < shurikenMaxY)) {
 				monsters.splice(j, 1);
 				shurikens.splice(k, 1);
+				score.increaseScore();
 			}
 		}
 	}
 }
-
 
