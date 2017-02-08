@@ -34,9 +34,8 @@ ul {
 	margin-top: 20px;
 }
 
-canvas {
+#my-canvas {
 	background: rgb(34,139,34);
-	width: 375px;
 	display: block;
 	margin: 0 auto;
 }
