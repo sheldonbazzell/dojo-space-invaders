@@ -1,74 +1,64 @@
-var canvas = document.getElementById('my-canvas'),
+const canvas = document.getElementById('my-canvas'),
 	ctx    = canvas.getContext('2d');
-var rightPressed = false,
-	leftPressed  = false;
+let rightPressed = false, leftPressed  = false;
 
 document.addEventListener('keydown', keyDownHandler)
 document.addEventListener('keyup', keyUpHandler)
 
 function keyDownHandler(e) {
-	if(e.keyCode == 39) {
-		rightPressed = true;
-	} else if(e.keyCode == 37) {
-		leftPressed = true;
-	}
+	if(e.keyCode == 39) rightPressed = true;
+	else if(e.keyCode == 37) leftPressed = true;
 }
 function keyUpHandler(e) {
-	if(e.keyCode == 39) {
-		rightPressed = false;
-	} else if(e.keyCode == 37) {
-		leftPressed = false;
-	}
+	if(e.keyCode == 39) rightPressed = false;
+	else if(e.keyCode == 37) leftPressed = false;
 }
 
-document.onkeypress = function(e) {
-	if(e.keyCode == 32) {
-		shurikens.add();
-	}
+document.onkeypress = e => {
+	if(e.keyCode == 32) shurikens.add();
 }
 
 /*##################################################*/
-/*#                  ninja class                   #*/
+/*#                  ninja                         #*/
 /*##################################################*/
 function Ninja() {
 	this.width  = 29;
 	this.height = 43;
 	this.lives	= 3;
-	this.x      = canvas.width/2;
-	this.y      = canvas.height - this.height/2 - 5;
-	this.drawNinja = function(posX, posY) {
-		ninja_image     = new Image();
+	this.x = canvas.width/2;
+	this.y = canvas.height - this.height/2 - 5;
+	this.drawNinja = (posX, posY) => {
+		ninja_image = new Image();
 		ninja_image.src = 'images/up1.png'
 		ctx.drawImage(ninja_image, posX - this.width/2,
 		posY - this.height/2, this.width, this.height);
 	}
 }
 
-var ninja = new Ninja();
+let ninja = new Ninja();
 
 /*##################################################*/
-/*#                highscore class                 #*/
+/*#                highscore                       #*/
 /*##################################################*/
 function HighScore() {
 	this.amount = 0;
-	this.show = function() {
+	this.show = () => {
 		if(localStorage.getItem('highScore') == null) {
-			localStorage.getItem('highScore') = 0;
+			localStorage.setItem('highScore', score.amount);
 		}
 		document.getElementById('high-score').innerHTML = "<p>High Score: "+localStorage.getItem('highScore')+"</p>"
 	}
-	this.update = function() {
+	this.update = () => {
 		if(score.amount > this.amount) {
 			localStorage.setItem('highScore', score.amount);
 			highScore.show();
 		}
 	}
 }
-
-var highScore = new HighScore()
+let highScore = new HighScore()
 
 /*##################################################*/
-/*#                  score class                   #*/
+/*#                  score 		                   #*/
 /*##################################################*/
 function Score() {
 	this.amount = 0;
@@ -76,37 +66,33 @@ function Score() {
 		this.amount +=10;
 	}
 }
-
-var score = new Score();
+let score = new Score();
 
 /*##################################################*/
-/*#            shurikens (parent) class            #*/
+/*#            shurikens (parent) 		            #*/
 /*##################################################*/
 function Shurikens() {
 	this.arr = [];
-	this.add = function() {
+	this.add = () => {
 		this.arr.push(new Shuriken())
 	}
 	this.move = function() { 
 		if(this.arr.length < 3) {
-			for(var i = 0; i < this.arr.length; i++) {
-				s = this.arr[i];
+			this.arr.forEach( (s, i) => {
 				s.draw(s.x, s.y);
 				s.y = s.y + s.dy;
 				if(s.x < 0 || s.x > ctx.width || s.y < 0) {
 					this.arr.splice(i, 1);
-				}
-			}
+				}	
+			});
 		}
-		else {
-			this.arr.length = 3;
-		}
+		else this.arr.length = 3;
 	}
 }
-var shurikens = new Shurikens();
+let shurikens = new Shurikens();
 
 /*##################################################*/
-/*#                 shuriken class                 #*/
+/*#                 shuriken 	                   #*/
 /*##################################################*/
 function Shuriken() {
 	this.width  = 18;
@@ -115,7 +101,7 @@ function Shuriken() {
 	this.dy     = -2;
 	this.x      = ninja.x;
 	this.y      = ninja.y - ninja.height/2 - this.height/2;
-	this.draw = function(posX, posY) {
+	this.draw = (posX, posY) => {
 		shuriken_image     = new Image();
 		shuriken_image.src = 'images/ns1.png'
 		ctx.drawImage(shuriken_image, posX - this.width/2,
@@ -124,29 +110,28 @@ function Shuriken() {
 }
 
 /*##################################################*/
-/*#            invaders (parent) class             #*/
+/*#            invaders (parent)	               #*/
 /*##################################################*/
 function Invaders() {
 	this.arr  = [];
-	this.add = function() {
+	this.add = () => {
 		this.arr.push(new Invader())
 	}
-	this.move = function() {
-		for(var j = 0; j < invaders.arr.length; j++) {
-			m = invaders.arr[j];
+	this.move = () => {
+		invaders.arr.forEach( (m, i) => {
 			m.draw(m.x, m.y);
 			m.y = m.y + m.dy;
 			if(m.x < 0 || m.x > canvas.width || m.y > canvas.height) {
-				invaders.arr.splice(j, 1);
+				invaders.arr.splice(i, 1);
 				ninja.lives--;
 			}	
-		}
+		})
 	}
 }
-var invaders = new Invaders();
+let invaders = new Invaders();
 
 /*##################################################*/
-/*#                 invader class                  #*/
+/*#                 invader		                   #*/
 /*##################################################*/
 function Invader() {
 	this.width  = 44;
@@ -155,7 +140,7 @@ function Invader() {
 	this.y      = 0;
 	this.dx     = 0;
 	this.dy     = 2;
-	this.draw = function(posX, posY) {
+	this.draw = (posX, posY) => {
 		invader_image     = new Image();
 		invader_image.src = 'images/spaceinvader.png'
 		ctx.drawImage(invader_image, posX - this.width/2,
@@ -164,12 +149,12 @@ function Invader() {
 }
 /*#            the invaders are coming             #*/
 invaders.add();
-setInterval(function() {
+setInterval( () => {
 	invaders.add();
 }, 500);
 draw();
 
-var explosionHeight = 20,
+let explosionHeight = 20,
 	explosionWidth  = 20,
 	explosionX      = ninja.x,
 	explosionY      = ninja.y;
@@ -203,17 +188,10 @@ function draw() {
 	highScore.show();
 	invadershurikenCollision();
 	ninja.drawNinja(ninja.x, ninja.y);
-	if(rightPressed && ninja.x < (canvas.width - ninja.width/2)) {
+	if(rightPressed && ninja.x < (canvas.width - ninja.width/2))
 		ninja.x +=3
-	} else if(leftPressed && ninja.x > 15) {
+	else if(leftPressed && ninja.x > 15)
 		ninja.x -=3
-	}
-	for(var invader in invaders) {
-		invaders[invader].y++;
-	}
-	for(var shuriken in shurikens) {
-		shurikens[shuriken].y--;
-	}
 	if (ninja.lives == 0) {
 		gameOver();
 		drawExplosion();
@@ -233,6 +211,7 @@ function gameOver() {
 	ctx.fillStyle = "Black";
 	ctx.font      = "16px Arial";
 	ctx.fillText("GAME OVER", canvas.width/2-50, canvas.height/2-10)
+	ctx.fillText("press space bar to restart", canvas.width/2-92, canvas.height/2+20)
 	document.onkeypress = function(e) {
 		if(e.keyCode == 32) {
 			document.location.reload();
@@ -252,7 +231,7 @@ function drawExplosion(posX, posY) {
 
 function invaderNinjaCollision() {
 
-	for(var i = 0; i < invaders.length; i++) {
+	for(let i = 0; i < invaders.length; i++) {
 		invader = invaders[i];
 		invaderMinX = invader.x - invaderWidth/2;
 		invaderMaxX = invader.x + invaderWidth/2;
@@ -273,7 +252,7 @@ function invaderNinjaCollision() {
 }
 
 function invadershurikenCollision() {
-	for(var j = 0; j < invaders.arr.length; j++) {
+	for(var j = 0; j < invaders.arr.length; j++)
 		for(var k = 0; k < shurikens.arr.length; k++) {
 			invader = invaders.arr[j];
 			if(invader) {
@@ -296,6 +275,5 @@ function invadershurikenCollision() {
 				score.increase();
 			}
 		}
-	}
 }
 
