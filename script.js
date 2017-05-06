@@ -62,7 +62,7 @@ let highScore = new HighScore()
 /*##################################################*/
 function Score() {
 	this.amount = 0;
-	this.increase = function() {
+	this.increase = () => {
 		this.amount +=10;
 	}
 }
